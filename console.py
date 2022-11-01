@@ -31,6 +31,14 @@ class HBNBCommand(cmd.Cmd):
     def do_EOF(self, line):
         """End of File"""
         return True
+    
+    def help_EOF(self):
+        """End of file command to quit silently"""
+        print("press C + D to quit")
+        
+    def help_quit(self):
+        """QUit""" 
+        print("Quit silently")
 
     def do_create(self, line):
         """
