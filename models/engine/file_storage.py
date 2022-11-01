@@ -1,59 +1,47 @@
 #!/usr/bin/python3
-"""
-module that defines a FileStorage class
-"""
+"""A module for the File Storage class"""
 import json
-from os import path
 from models.base_model import BaseModel
 from models.user import User
-from models.amenity import Amenity
-from models.city import City
-from models.state import State
 from models.place import Place
 from models.review import Review
+from models.city import City
+from models.state import State
+from models.amenity import Amenity
 
 
 class FileStorage:
-    """ class that  that serializes instances to a
-    JSON file and deserializes JSON file to instances"""
-    __file_path = "file.json"
-    __objects = {}
-    __classes = {
-        'BaseModel': BaseModel,
-        'User': User,
-        "Amenity": Amenity,
-        "City": City,
-        "State": State,
-        "Place": Place,
-        "Review": Review
-                }
+    """File Storage Class"""
+
+    __file_path = 'file.json'
+    __objects = dict()
 
     def all(self):
-        """ returns the dictionary __objects """
+        """All method: return the dictionary __objects"""
         return self.__objects
 
     def new(self, obj):
-        """ sets in __objects the obj
-        with key <obj class name>.id """
-        key = f"{obj.__class__.__name__}.{obj.id}"
-        self.__objects[key] = obj
+        """Sets in __objects the obj with key <obj class name>.id"""
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        FileStorage.__objects[key] = obj
 
     def save(self):
-        """ serializes __objects to the
-        JSON file (path: __file_path) """
-        tmp = {}
-        for k, v in self.__objects.items():
-            tmp[k] = v.to_dict()
-        with open(self.__file_path, "w", encoding="utf-8") as f:
-            json.dump(tmp, f)
+        """Serializes __objects to the JSON file (path: __file_path)"""
+        new_dict = dict()
+        for key, obj in FileStorage.__objects.items():
+            new_dict[key] = obj.to_dict()
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
+            json.dump(new_dict, f)
 
     def reload(self):
-        """ deserializes the JSON file to __objects """
-        if path.isfile(self.__file_path) is False:
-            return
+        """Deserializes the JSON file to __objects"""
 
-        with open(self.__file_path, encoding="utf-8") as f:
-            des = json.load(f)
-            for k, v in des.items():
-                cls = v['__class__']
-                self.__objects[k] = self.__classes[cls](**v)
+        try:
+            with open(FileStorage.__file_path, "r", encoding="utf-8") as f:
+                new_dict = json.load(f)
+                for dictionary in new_dict.values():
+                    my_class = eval(dictionary["__class__"])
+                    new_instance = my_class(**dictionary)
+                    self.new(new_instance)
+        except FileNotFoundError:
+            pass
