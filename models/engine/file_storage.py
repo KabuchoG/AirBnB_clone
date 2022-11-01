@@ -52,7 +52,7 @@ class FileStorage:
         if path.isfile(self.__file_path) is False:
             return
 
-        with open(self.__file_path, encoding="utf-8") as f:
+        with open(self.__file_path, 'r') as f:
             des = json.load(f)
             for k, v in des.items():
                 cls = v['__class__']
