@@ -1,1 +1,1 @@
-HTML $ CSS FOR THE AIRBNB PROJECTS
+Web static
